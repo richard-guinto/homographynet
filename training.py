@@ -47,13 +47,13 @@ def euclidean_l2(y_true, y_pred):
     return K.sqrt(K.sum(K.square(y_pred - y_true), axis=-1, keepdims=True))
 #    return K.sqrt(K.maximum(K.sum(K.square(y_pred - y_true), axis=-1, keepdims=True), K.epsilon()))
 
+
 # Dataset-specific
-#train_data_path = '/Users/richard/MSEE/deephomography/dataset/training'
-#test_data_path = '/Users/richard/MSEE/deephomography/dataset/test'
 train_data_path = '/home/samsung/richard/dataset/training'
 test_data_path = '/home/samsung/richard/dataset/test'
-#num_samples = 50 * 9216 # 53 archives x 9,216 samples per archive, but use just 50 and save the 3 for testing
-num_samples = 40 * 9216 # 43 archives x 9,216 samples per archive, but use just 40 and save the 3 for testing
+samples_per_archive = 9216
+num_archives = 40
+num_samples = num_archives * samples_per_archive # 43 archives x 9,216 samples per archive, but use just 40 and save the 3 for testing
 
 # From the paper
 batch_size = 64
@@ -61,8 +61,6 @@ total_iterations = 90000
 
 steps_per_epoch = num_samples / batch_size # As stated in Keras docs
 epochs = int(total_iterations / steps_per_epoch)
-#steps_per_epoch = 10
-#epochs = 10
 
 input_shape = (128, 128, 2)
 kernel_size = 3
@@ -109,10 +107,7 @@ model.add(Dense(8))
 #model.add(Activation('softmax'))
 model.summary()
 
-# load weights
-#model.load_weights("/data/deephomography-00-1.65.hdf5")
-
-#ues optimizer Stochastic Gradient Methond with a Learning Rate of 0.005 and momentus of 0.9
+#use optimizer Stochastic Gradient Methond with a Learning Rate of 0.005 and momentum of 0.9
 #sgd = optimizers.SGD(lr=0.005, momentum=0.9, decay=0.001355)
 sgd = optimizers.SGD(lr=0.005, momentum=0.9)
 
@@ -121,20 +116,10 @@ model.compile(loss=euclidean_l2,\
         optimizer=sgd, metrics=['mean_squared_error'])
 
 #check point
-filepath = "/data/richard/20171022/weights-{epoch:02d}-{loss:.2f}.hdf5"
+filepath = "/data/richard/20171024/checkpoint-{epoch:02d}-{loss:.2f}.hdf5"
 checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=1)
-progbar = ProgbarLogger('steps')
-#learning rate scheduler
-
-
-#callback_list = [progbar, checkpoint]
 callback_list = [checkpoint]
 
-
-# share GPU
-#config = tf.ConfigProto()
-#config.gpu_options.per_process_gpu_memory_fraction = 0.5
-#set_session(tf.Session(config=config))
 
 # Train
 print('TRAINING...')
@@ -145,6 +130,6 @@ model.fit_generator(data_loader(train_data_path, batch_size),
 print('TESTING...')
 # Test
 score = model.evaluate_generator(data_loader(test_data_path, batch_size),
-                         steps=3*9216/batch_size)
+                         steps=3*samples_per_archive/batch_size)
 
 print('score: ', score)
