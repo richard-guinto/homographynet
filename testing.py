@@ -42,21 +42,18 @@ def data_loader(path, batch_size=64):
 
 def euclidean_l2(y_true, y_pred):
     return K.sqrt(K.sum(K.square(y_pred - y_true), axis=-1, keepdims=True))
-#    return K.sqrt(K.maximum(K.sum(K.square(y_pred - y_true), axis=-1, keepdims=True), K.epsilon()))
 
 def mace(y_true, y_pred):
-#    print('pred: ', y_pred.reshape(-1,4,2))
-#    return K.mean(32*K.sqrt(K.sum(K.square(y_pred.reshape(-1,4,2) - y_true.reshape(-1,4,2)), axis=1, keepdims=True)))
     return K.mean(32*K.sqrt(K.sum(K.square(K.reshape(y_pred, (-1,4,2)) - K.reshape(y_true, (-1,4,2))), axis=-1, keepdims=True)),axis=1)
 
-#modify this path if your system
+#modify this path in your system
 checkpoint = "/home/samsung/richard/model.hdf5"
+test_data_path = '/home/samsung/richard/dataset/test'
 
 # load model
 model = load_model(checkpoint, custom_objects={'euclidean_l2': euclidean_l2, 'mace': mace})
 
 # Dataset-specific
-test_data_path = '/home/samsung/richard/dataset/test'
 samples_per_archive = 9216
 num_archive = 3
 num_samples = num_archive * samples_per_archive # 3 archives (out of 43) x 9,216 samples per archive for testing
