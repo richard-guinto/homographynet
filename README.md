@@ -8,8 +8,8 @@
 Deep Image Homography Estimation a.k.a. HomographyNet is a Deep Convulation Neural Network which directly produces the Homography relating two images.  The paper is fully described from this link:  https://arxiv.org/pdf/1606.03798.pdf
 
 
-<img src="files/HomographyNet%20Layers.png">
-<img src="files/Loss.png">
+<img src="HomographyNet%20Layers.png">
+<img src="Loss.png">
 
 # Dataset
 The dataset was generated using images from the COCO 2017 Test Images as described in the paper.
