@@ -267,11 +267,11 @@ model.fit_generator(data_loader(train_data_path, batch_size),
 
 ### Model Summary
 
-<img src="files/Model%20Summary.png">
+<img src="Model%20Summary.png">
 
 ### Below is the screenshot of the training results for 15 epochs
 
-<img src="files/Training%20Result.png">
+<img src="Training%20Result.png">
 
 ## Testing / Evaluation
 The training produced the record of the weights for each epoch and the last checkpoint was used to load for the model evaluation
@@ -349,7 +349,7 @@ print('Test score:', score)
 ## Testing Result:
 The Mean Average Corner Error for the evaluation phase resulted to 6.30 pixels only, which is better than 9.2 pixels (the published result in the paper).
 
-<img src="files/Model%20Evaluation.png">
+<img src="Model%20Evaluation.png">
 
 ## Prediction samples
 This python code shows the prediction results with the first 10 samples of the test archive.
