@@ -44,14 +44,18 @@ def euclidean_l2(y_true, y_pred):
     return K.sqrt(K.sum(K.square(y_pred - y_true), axis=-1, keepdims=True))
 #    return K.sqrt(K.maximum(K.sum(K.square(y_pred - y_true), axis=-1, keepdims=True), K.epsilon()))
 
+def mace(y_true, y_pred):
+#    print('pred: ', y_pred.reshape(-1,4,2))
+#    return K.mean(32*K.sqrt(K.sum(K.square(y_pred.reshape(-1,4,2) - y_true.reshape(-1,4,2)), axis=1, keepdims=True)))
+    return K.mean(32*K.sqrt(K.sum(K.square(K.reshape(y_pred, (-1,4,2)) - K.reshape(y_true, (-1,4,2))), axis=-1, keepdims=True)),axis=1)
+
 #modify this path if your system
-checkpoint = "/data/richard/model.hdf5"
+checkpoint = "/home/samsung/richard/model.hdf5"
 
 # load model
-model = load_model(checkpoint, custom_objects={'euclidean_l2': euclidean_l2})
+model = load_model(checkpoint, custom_objects={'euclidean_l2': euclidean_l2, 'mace': mace})
 
 # Dataset-specific
-train_data_path = '/home/samsung/richard/dataset/training'
 test_data_path = '/home/samsung/richard/dataset/test'
 samples_per_archive = 9216
 num_archive = 3
@@ -62,7 +66,7 @@ batch_size = 64
 total_iterations = 90000
 
 steps = num_samples / batch_size # As stated in Keras docs
-epochs = int(total_iterations / steps_per_epoch)
+epochs = int(total_iterations / steps)
 
 
 #ues optimizer Stochastic Gradient Methond with a Learning Rate of 0.005 and momentus of 0.9
@@ -70,7 +74,7 @@ sgd = optimizers.SGD(lr=0.005, momentum=0.9)
 
 #compile model
 model.compile(loss=euclidean_l2,\
-        optimizer=sgd, metrics=['mean_squared_error'])
+        optimizer=sgd, metrics=[mace])
 
 
 # Test
